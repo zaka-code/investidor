@@ -157,6 +157,8 @@ function set(id, val) { const el = document.getElementById(id); if (el) el.textC
 function updateDOM(r) {
   set('val-por-restaurante', fmt(r.porRestaurante));
   set('val-por-camera',      fmt(r.porCamera) + ' / câmera');
+  set('val-margem-liquida',  r.margem.toFixed(1) + '%');
+  set('val-margem-lucro',    fmt(r.lucroPorRestaurante) + ' / restaurante');
   set('val-infra',           fmt(r.totalInfraBRL));
   set('val-equipe',          fmt(r.totalEquipeBRL));
   set('val-subtotal',        fmt(r.subtotal));

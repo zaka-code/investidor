@@ -187,11 +187,18 @@
             <div class="live-badge">AO VIVO</div>
           </div>
 
-          <div class="result-hero">
-            <div class="result-hero-item">
-              <div class="hero-label">Custo por Restaurante / mês</div>
+          <div class="result-hero" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0;">
+            <!-- Custo por Restaurante -->
+            <div class="result-hero-item" style="border-right: 1px solid rgba(255,255,255,0.07); padding-right: 24px;">
+              <div class="hero-label">Custo / Restaurante</div>
               <div class="hero-value" id="val-por-restaurante">R$ 0,00</div>
               <div class="hero-sub" id="val-por-camera">R$ 0,00 / câmera</div>
+            </div>
+            <!-- Margem Líquida -->
+            <div class="result-hero-item" style="padding-left: 24px;">
+              <div class="hero-label" style="color: var(--emerald);">Margem Líquida</div>
+              <div id="val-margem-liquida" style="font-size: 38px; font-weight: 800; letter-spacing: -2px; background: linear-gradient(135deg, var(--emerald), #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; margin-bottom: 8px; transition: all 0.3s ease;">0%</div>
+              <div class="hero-sub" id="val-margem-lucro" style="color: rgba(16,185,129,0.8);">R$ 0,00 / restaurante</div>
             </div>
           </div>
 
