@@ -11,7 +11,7 @@ const STATE = {
   taxaCambio: 7.00,
   encargos: 10,
   imposto: 15,
-  precoVenda: 950,
+  precoVenda: 550,
   taxaVision: 2000,
   taxaControle: 2000,
   gpuShifts: 1,
@@ -38,8 +38,8 @@ const infraItems = [
 // ITENS DE EQUIPE
 // ──────────────────────────────────────────────
 const equipeItems = [
-  { id: 'devops',      name: 'DevOps (Apoio)', value: 1500.00, currency: 'BRL', billingType: 'month', shifts: 1, hoursPerShift: 1, daysPerMonth: 30, type: 'fixed', locked: true },
-  { id: 'secretaria',  name: 'Secretaria',     value:  700.00, currency: 'BRL', billingType: 'month', shifts: 1, hoursPerShift: 1, daysPerMonth: 30, type: 'fixed', locked: true },
+  { id: 'devops',      name: 'DevOps (Apoio)', value:  270.00, currency: 'BRL', billingType: 'month', shifts: 1, hoursPerShift: 1, daysPerMonth: 30, type: 'fixed', locked: true },
+  { id: 'secretaria',  name: 'Secretaria',     value:  100.00, currency: 'BRL', billingType: 'month', shifts: 1, hoursPerShift: 1, daysPerMonth: 30, type: 'fixed', locked: true },
 ];
 
 // ──────────────────────────────────────────────
