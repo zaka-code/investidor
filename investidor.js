@@ -8,6 +8,7 @@
 // ──────────────────────────────────────────────
 const STATE = {
   qtdRestaurantes: 4,
+  camPorRest: 3,
   taxaCambio: 7.00,
   encargos: 10,
   imposto: 15,
@@ -19,9 +20,8 @@ const STATE = {
   gpuDays: 30,
 };
 
-const GPU_CAP      = 4;   // restaurantes por GPU
-const VPS_CAP      = 20;  // restaurantes por VPS
-const CAM_POR_REST = 3;   // câmeras por restaurante
+const GPU_CAM_CAP  = 14;  // câmeras por GPU
+const VPS_CAM_CAP  = 80;  // câmeras por VPS
 
 // ──────────────────────────────────────────────
 // ITENS DE INFRAESTRUTURA
@@ -47,8 +47,9 @@ const equipeItems = [
 // ──────────────────────────────────────────────
 const fmt    = (v)              => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const toBRL  = (value, cur)     => cur === 'USD' ? value * STATE.taxaCambio : value;
-const qtdGPUs = ()              => Math.ceil(STATE.qtdRestaurantes / GPU_CAP);
-const qtdVPSs = ()              => Math.ceil(STATE.qtdRestaurantes / VPS_CAP);
+const totalCameras = ()         => STATE.qtdRestaurantes * STATE.camPorRest;
+const qtdGPUs      = ()         => Math.ceil(totalCameras() / GPU_CAM_CAP);
+const qtdVPSs      = ()         => Math.ceil(totalCameras() / VPS_CAM_CAP);
 
 function calcMonthlyBase(item) {
   const v = parseFloat(item.value) || 0;
@@ -59,15 +60,10 @@ function calcMonthlyBase(item) {
 }
 
 function calcVPSTotal(unitBRL) {
-  const n = STATE.qtdRestaurantes;
   const qtdVPS = qtdVPSs();
-  if (n === 0 || qtdVPS === 0) return 0;
-  let total = 0;
-  for (let i = 0; i < qtdVPS; i++) {
-    const served = Math.min((i + 1) * VPS_CAP, n) - (i * VPS_CAP + 1) + 1;
-    total += (unitBRL / VPS_CAP) * served;
-  }
-  return total;
+  if (qtdVPS === 0) return 0;
+  // Agora o VPS escala por câmeras totais (VPS_CAM_CAP = 80 câmeras/VPS)
+  return unitBRL * qtdVPS;
 }
 
 function calcStorageTotal(item, monthlyBaseBRL) {
@@ -138,7 +134,8 @@ function calcular() {
   const total         = subtotal + encargo + imposto;
 
   const porRestaurante     = n > 0 ? total / n : 0;
-  const porCamera          = porRestaurante / CAM_POR_REST;
+  const camTotal           = totalCameras();
+  const porCamera          = camTotal > 0 ? total / camTotal : 0;
   const lucroTotal         = receitaTotal - total;
   const lucroPorRestaurante= n > 0 ? lucroTotal / n : 0;
   const margem             = STATE.precoVenda > 0 ? (lucroPorRestaurante / STATE.precoVenda) * 100 : 0;
@@ -146,7 +143,7 @@ function calcular() {
 
   updateDOM({ totalInfraBRL, totalEquipeBRL, subtotal, encargo, imposto, total,
               porRestaurante, porCamera, lucroTotal, lucroPorRestaurante, margem,
-              implementacaoTotal, detalheInfra, gpus, vpss, n });
+              implementacaoTotal, detalheInfra, gpus, vpss, n, camTotal });
 }
 
 // ──────────────────────────────────────────────
@@ -187,8 +184,11 @@ function updateDOM(r) {
   document.getElementById('resource-summary').innerHTML = `
     <div class="res-badge"><div class="res-badge-icon">⚡</div><div class="res-badge-val">${r.gpus}</div><div class="res-badge-label">GPU${r.gpus !== 1 ? 's' : ''}</div></div>
     <div class="res-badge"><div class="res-badge-icon">🖥️</div><div class="res-badge-val">${r.vpss}</div><div class="res-badge-label">VPS</div></div>
-    <div class="res-badge"><div class="res-badge-icon">📷</div><div class="res-badge-val">${r.n * CAM_POR_REST}</div><div class="res-badge-label">Câmeras</div></div>
+    <div class="res-badge"><div class="res-badge-icon">📷</div><div class="res-badge-val">${r.camTotal}</div><div class="res-badge-label">Câmeras</div></div>
   `;
+
+  // Legenda dinâmica de câmeras por restaurante
+  set('metric-cam-por-rest', `${STATE.camPorRest} câmera${STATE.camPorRest !== 1 ? 's' : ''} / restaurante`);
 
   // Infraestrutura — só total
   const infraDisplay = document.getElementById('infra-total-display');
@@ -218,6 +218,7 @@ function bindInputs() {
     });
   };
   bind('qtd-restaurantes', 'qtdRestaurantes', true);
+  bind('cam-por-rest',     'camPorRest',      true);
   bind('encargos',         'encargos');
   bind('imposto',          'imposto');
   bind('preco-venda',      'precoVenda');
